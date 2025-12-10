@@ -20,6 +20,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",  # Next.js dev server
         "http://127.0.0.1:3000",
+        "http://localhost:3001",  # Alternative Next.js port
+        "http://127.0.0.1:3001",
         settings.FRONTEND_URL if hasattr(settings, 'FRONTEND_URL') else "*"
     ],
     allow_credentials=True,

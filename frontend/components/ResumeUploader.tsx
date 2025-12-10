@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Upload, FileText, Loader2, CheckCircle2 } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 
+
 interface UploadResult {
   resumeId: string;
   fileName: string;
@@ -31,9 +32,9 @@ export default function ResumeUploader({ onUploadSuccess }: JobRoleSelectorProps
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return;
-    
+
     const file = acceptedFiles[0];
-    
+
     // Validate file type
     if (!file.name.endsWith('.pdf')) {
       toast({
@@ -43,7 +44,7 @@ export default function ResumeUploader({ onUploadSuccess }: JobRoleSelectorProps
       });
       return;
     }
-    
+
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast({
@@ -53,7 +54,7 @@ export default function ResumeUploader({ onUploadSuccess }: JobRoleSelectorProps
       });
       return;
     }
-    
+
     await handleUpload(file);
   }, [user]);
 
@@ -119,7 +120,7 @@ export default function ResumeUploader({ onUploadSuccess }: JobRoleSelectorProps
         skills: data.skills,
         missingSkills: data.missingSkills
       });
-      
+
       toast({
         title: 'Success!',
         description: 'Resume analyzed successfully',
@@ -162,14 +163,13 @@ export default function ResumeUploader({ onUploadSuccess }: JobRoleSelectorProps
           {/* Dropzone Area */}
           <div
             {...getRootProps()}
-            className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-all ${
-              isDragActive
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'
-            } ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-all ${isDragActive
+              ? 'border-blue-500 bg-blue-50'
+              : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'
+              } ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <input {...getInputProps()} />
-            
+
             {uploading ? (
               <div className="flex flex-col items-center">
                 <Loader2 className="h-16 w-16 text-blue-600 animate-spin mb-4" />
@@ -223,21 +223,19 @@ export default function ResumeUploader({ onUploadSuccess }: JobRoleSelectorProps
               <div className="mt-4 p-4 bg-white rounded-lg border border-green-200">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium text-gray-700">ATS Score</span>
-                  <span className={`text-2xl font-bold ${
-                    uploadResult.atsScore >= 80 ? 'text-green-600' :
-                    uploadResult.atsScore >= 60 ? 'text-yellow-600' :
-                    'text-red-600'
-                  }`}>
+                  <span className={`text-2xl font-bold ${uploadResult.atsScore >= 80 ? 'text-green-600' :
+                      uploadResult.atsScore >= 60 ? 'text-yellow-600' :
+                        'text-red-600'
+                    }`}>
                     {uploadResult.atsScore}%
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className={`h-2 rounded-full ${
-                      uploadResult.atsScore >= 80 ? 'bg-green-600' :
-                      uploadResult.atsScore >= 60 ? 'bg-yellow-600' :
-                      'bg-red-600'
-                    }`}
+                    className={`h-2 rounded-full ${uploadResult.atsScore >= 80 ? 'bg-green-600' :
+                        uploadResult.atsScore >= 60 ? 'bg-yellow-600' :
+                          'bg-red-600'
+                      }`}
                     style={{ width: `${uploadResult.atsScore}%` }}
                   />
                 </div>
