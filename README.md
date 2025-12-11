@@ -103,334 +103,59 @@ graph TB
 This diagram visualizes the navigation structure between different views in the application.
 
 ```mermaid
-import React, { useState } from 'react';
-import { Home, LogIn, UserPlus, Mail, User, LayoutDashboard, FileText, Dumbbell, BarChart3, Video, Settings, CheckCircle, FileSearch, ArrowRight } from 'lucide-react';
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#1e293b', 'primaryTextColor': '#e2e8f0', 'primaryBorderColor': '#7e22ce', 'lineColor': '#a855f7', 'secondaryColor': '#0f172a', 'tertiaryColor': '#334155', 'fontSize': '16px', 'fontFamily': 'Inter, system-ui, sans-serif'}}}%%
 
-const SitemapNode = ({ icon: Icon, label, description, onClick, isActive, color = "bg-slate-700" }) => (
-  <div
-    onClick={onClick}
-    className={`
-      relative flex flex-col items-center p-4 rounded-xl cursor-pointer
-      transition-all duration-300 transform hover:scale-105
-      ${isActive ? `${color} ring-4 ring-purple-500 shadow-2xl shadow-purple-500/50` : 'bg-slate-800/50 hover:bg-slate-700/70'}
-      backdrop-blur-sm border border-slate-600/30
-    `}
-  >
-    <div className={`p-3 rounded-lg ${isActive ? 'bg-white/20' : 'bg-slate-600/30'} mb-2`}>
-      <Icon className="w-6 h-6 text-purple-300" />
-    </div>
-    <span className="text-sm font-semibold text-white text-center">{label}</span>
-    {description && (
-      <span className="text-xs text-slate-400 text-center mt-1">{description}</span>
-    )}
-  </div>
-);
+graph TB
+    Start([👤 User Arrives]) --> Landing[🏠 Landing Page<br/><small>Route: /</small>]
+    
+    %% Authentication Branch
+    Landing -->|New User| Register[📝 Register<br/><small>Route: /register</small><br/><em>Sign-up Form, Password Validation</em>]
+    Landing -->|Existing User| Login[🔑 Login<br/><small>Route: /login</small><br/><em>Email/Password, Firebase Auth</em>]
+    
+    Register --> Verify[📧 Email Verification<br/><small>Route: /verify-email</small><br/><em>Verification Link, Resend Option</em>]
+    Verify --> Profile[👤 Profile Setup<br/><small>Route: /profile/setup</small><br/><em>Role Selection, Experience Level</em>]
+    
+    %% Dashboard Hub
+    Login --> Dashboard[📊 Dashboard<br/><small>Route: /dashboard</small><br/><em>Stats Cards, Recent Sessions, Quick Actions</em>]
+    Profile --> Dashboard
+    
+    %% Main Features
+    Dashboard -->|Upload Resume| ResumeUpload[📄 Resume Upload<br/><small>Route: /resume/upload</small><br/><em>File Uploader, Text Extraction</em>]
+    Dashboard -->|Study Materials| Practice[📚 Practice Hub<br/><small>Route: /practice</small><br/><em>Question Library, Video Tutorials</em>]
+    Dashboard -->|View Progress| Analytics[📈 Analytics<br/><small>Route: /analytics</small><br/><em>Progress Charts, Trend Analysis</em>]
+    Dashboard -->|Start Interview| Interview[🎙️ Interview Mode Selection<br/><small>Route: /interview/mode</small><br/><em>Mode Cards, Difficulty Slider</em>]
+    
+    %% Resume Flow
+    ResumeUpload --> Insights[🔍 Resume Insights<br/><small>Route: /resume/insights</small><br/><em>ATS Score, Keyword Gaps, Suggestions</em>]
+    Insights -->|Return| Dashboard
+    
+    %% Interview Flow
+    Interview --> Setup[⚙️ Hardware Setup<br/><small>Route: /interview/setup</small><br/><em>Camera Preview, Mic Test, Permissions</em>]
+    Setup --> Active[🎬 Active Interview Session<br/><small>Route: /interview/session</small><br/><em>Video Stream, Questions, Timer, Transcript</em>]
+    Active --> Results[✅ Feedback & Results<br/><small>Route: /interview/results</small><br/><em>Score Breakdown, Video Replay, Better Answers</em>]
+    Results -->|Continue Practice| Dashboard
+    
+    %% Practice and Analytics Return
+    Practice -->|Back| Dashboard
+    Analytics -->|Back| Dashboard
+    
+    %% Styling
+    classDef entryPoint fill:#2563eb,stroke:#60a5fa,stroke-width:3px,color:#fff
+    classDef authNode fill:#7e22ce,stroke:#a855f7,stroke-width:2px,color:#fff
+    classDef dashNode fill:#059669,stroke:#34d399,stroke-width:3px,color:#fff
+    classDef featureNode fill:#0891b2,stroke:#22d3ee,stroke-width:2px,color:#fff
+    classDef interviewNode fill:#be123c,stroke:#f43f5e,stroke-width:2px,color:#fff
+    classDef resultNode fill:#ca8a04,stroke:#facc15,stroke-width:2px,color:#fff
+    
+    class Start,Landing entryPoint
+    class Register,Login,Verify,Profile authNode
+    class Dashboard dashNode
+    class ResumeUpload,Practice,Analytics,Interview featureNode
+    class Setup,Active interviewNode
+    class Results,Insights resultNode
+```
 
-const ConnectionLine = ({ vertical = false, dashed = false }) => (
-  <div className={`
-    ${vertical ? 'w-0.5 h-8' : 'h-0.5 w-8'}
-    ${dashed ? 'bg-gradient-to-r from-purple-500/0 via-purple-500/50 to-purple-500/0' : 'bg-purple-500/30'}
-    ${dashed ? 'animate-pulse' : ''}
-  `} />
-);
 
-export default function InterauraSitemap() {
-  const [activeNode, setActiveNode] = useState('Landing');
-  const [showDetails, setShowDetails] = useState(true);
-
-  const nodeDetails = {
-    'Landing': {
-      route: '/',
-      purpose: 'First impression - Hero section with value proposition',
-      components: ['Hero Banner', 'Feature Overview', 'CTA Buttons']
-    },
-    'Login': {
-      route: '/login',
-      purpose: 'Secure authentication for returning users',
-      components: ['Email/Password Form', 'Firebase Auth', 'Remember Me']
-    },
-    'Register': {
-      route: '/register',
-      purpose: 'New user account creation',
-      components: ['Sign-up Form', 'Password Validation', 'Terms Checkbox']
-    },
-    'Verification': {
-      route: '/verify-email',
-      purpose: 'Email confirmation for security',
-      components: ['Verification Link', 'Resend Option', 'Status Check']
-    },
-    'ProfileSetup': {
-      route: '/profile/setup',
-      purpose: 'Initial user preferences and target role',
-      components: ['Role Selection', 'Experience Level', 'Industry Tags']
-    },
-    'Dashboard': {
-      route: '/dashboard',
-      purpose: 'Central hub - Activity overview and quick actions',
-      components: ['Stats Cards', 'Recent Sessions', 'Quick Start Buttons']
-    },
-    'ResumeUpload': {
-      route: '/resume/upload',
-      purpose: 'PDF parsing and ATS scoring',
-      components: ['File Uploader', 'Text Extraction', 'Loading States']
-    },
-    'ResumeInsights': {
-      route: '/resume/insights',
-      purpose: 'Detailed ATS score breakdown and improvement tips',
-      components: ['Score Visualization', 'Keyword Gaps', 'Suggestions']
-    },
-    'PracticeHub': {
-      route: '/practice',
-      purpose: 'Question bank and learning resources',
-      components: ['Question Library', 'Video Tutorials', 'STAR Method Guide']
-    },
-    'Analytics': {
-      route: '/analytics',
-      purpose: 'Historical performance tracking',
-      components: ['Progress Charts', 'Comparison Metrics', 'Trend Analysis']
-    },
-    'InterviewMode': {
-      route: '/interview/mode',
-      purpose: 'Interview type and difficulty selection',
-      components: ['Mode Cards', 'Difficulty Slider', 'Role Context']
-    },
-    'Setup': {
-      route: '/interview/setup',
-      purpose: 'Hardware check and pre-interview calibration',
-      components: ['Camera Preview', 'Mic Test', 'Permission Requests']
-    },
-    'ActiveSession': {
-      route: '/interview/session',
-      purpose: 'Live interview with real-time AI interaction',
-      components: ['Video Stream', 'Question Display', 'Timer', 'Transcript']
-    },
-    'FeedbackResults': {
-      route: '/interview/results',
-      purpose: 'Comprehensive post-interview analysis',
-      components: ['Score Breakdown', 'Video Replay', 'Better Answers']
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-purple-950 p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-block px-4 py-2 bg-purple-500/20 rounded-full border border-purple-500/30 mb-4">
-            <span className="text-purple-300 text-sm font-semibold">✨ INTERAURA</span>
-          </div>
-          <h1 className="text-4xl font-bold text-white mb-2">Application Sitemap</h1>
-          <p className="text-slate-400">Click any node to view route details and components</p>
-        </div>
-
-        {/* Sitemap Visualization */}
-        <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl p-8 border border-slate-700/50 mb-8">
-          
-          {/* Landing */}
-          <div className="flex flex-col items-center mb-8">
-            <SitemapNode 
-              icon={Home} 
-              label="Landing Page" 
-              description="Entry Point"
-              onClick={() => setActiveNode('Landing')}
-              isActive={activeNode === 'Landing'}
-              color="bg-blue-600/80"
-            />
-            <ConnectionLine vertical />
-          </div>
-
-          {/* Authentication Flow */}
-          <div className="bg-slate-800/30 rounded-2xl p-6 mb-8 border border-slate-700/30">
-            <div className="text-center mb-4">
-              <span className="text-purple-300 font-semibold">🔐 Authentication Flow</span>
-            </div>
-            <div className="flex justify-center items-start gap-4">
-              <SitemapNode 
-                icon={LogIn} 
-                label="Login" 
-                onClick={() => setActiveNode('Login')}
-                isActive={activeNode === 'Login'}
-              />
-              <div className="flex flex-col items-center">
-                <SitemapNode 
-                  icon={UserPlus} 
-                  label="Register" 
-                  onClick={() => setActiveNode('Register')}
-                  isActive={activeNode === 'Register'}
-                />
-                <ConnectionLine vertical />
-                <ArrowRight className="w-5 h-5 text-purple-400 rotate-90" />
-                <ConnectionLine vertical />
-                <SitemapNode 
-                  icon={Mail} 
-                  label="Verification" 
-                  description="Email Confirm"
-                  onClick={() => setActiveNode('Verification')}
-                  isActive={activeNode === 'Verification'}
-                />
-                <ConnectionLine vertical />
-                <ArrowRight className="w-5 h-5 text-purple-400 rotate-90" />
-                <ConnectionLine vertical />
-                <SitemapNode 
-                  icon={User} 
-                  label="Profile Setup" 
-                  description="Onboarding"
-                  onClick={() => setActiveNode('ProfileSetup')}
-                  isActive={activeNode === 'ProfileSetup'}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Dashboard Hub */}
-          <div className="flex flex-col items-center mb-6">
-            <ConnectionLine vertical dashed />
-            <SitemapNode 
-              icon={LayoutDashboard} 
-              label="Dashboard" 
-              description="Command Center"
-              onClick={() => setActiveNode('Dashboard')}
-              isActive={activeNode === 'Dashboard'}
-              color="bg-green-600/80"
-            />
-            <ConnectionLine vertical />
-          </div>
-
-          {/* Main Features Grid */}
-          <div className="bg-slate-800/30 rounded-2xl p-6 mb-8 border border-slate-700/30">
-            <div className="text-center mb-4">
-              <span className="text-purple-300 font-semibold">⚡ Main Features</span>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <SitemapNode 
-                icon={FileText} 
-                label="Resume Upload" 
-                onClick={() => setActiveNode('ResumeUpload')}
-                isActive={activeNode === 'ResumeUpload'}
-              />
-              <SitemapNode 
-                icon={Dumbbell} 
-                label="Practice Hub" 
-                onClick={() => setActiveNode('PracticeHub')}
-                isActive={activeNode === 'PracticeHub'}
-              />
-              <SitemapNode 
-                icon={BarChart3} 
-                label="Analytics" 
-                onClick={() => setActiveNode('Analytics')}
-                isActive={activeNode === 'Analytics'}
-              />
-              <SitemapNode 
-                icon={Video} 
-                label="Interview Mode" 
-                onClick={() => setActiveNode('InterviewMode')}
-                isActive={activeNode === 'InterviewMode'}
-              />
-            </div>
-
-            {/* Resume Flow */}
-            <div className="flex justify-start items-center gap-3 mb-6 ml-8">
-              <div className="text-xs text-slate-400">Resume Flow:</div>
-              <ArrowRight className="w-4 h-4 text-purple-400" />
-              <SitemapNode 
-                icon={FileSearch} 
-                label="Insights" 
-                description="ATS Score"
-                onClick={() => setActiveNode('ResumeInsights')}
-                isActive={activeNode === 'ResumeInsights'}
-              />
-              <ArrowRight className="w-4 h-4 text-purple-400" />
-              <div className="text-xs text-slate-400">Back to Dashboard</div>
-            </div>
-
-            {/* Interview Flow */}
-            <div className="bg-slate-900/50 rounded-xl p-4 border border-purple-500/20">
-              <div className="text-center mb-4">
-                <span className="text-purple-300 font-semibold text-sm">🎙️ Interview Flow</span>
-              </div>
-              <div className="flex justify-center items-center gap-3">
-                <SitemapNode 
-                  icon={Settings} 
-                  label="Setup" 
-                  description="A/V Check"
-                  onClick={() => setActiveNode('Setup')}
-                  isActive={activeNode === 'Setup'}
-                />
-                <ArrowRight className="w-5 h-5 text-purple-400" />
-                <SitemapNode 
-                  icon={Video} 
-                  label="Active Session" 
-                  description="Live Interview"
-                  onClick={() => setActiveNode('ActiveSession')}
-                  isActive={activeNode === 'ActiveSession'}
-                  color="bg-red-600/80"
-                />
-                <ArrowRight className="w-5 h-5 text-purple-400" />
-                <SitemapNode 
-                  icon={CheckCircle} 
-                  label="Feedback" 
-                  description="Results & Tips"
-                  onClick={() => setActiveNode('FeedbackResults')}
-                  isActive={activeNode === 'FeedbackResults'}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Details Panel */}
-        {showDetails && activeNode && nodeDetails[activeNode] && (
-          <div className="bg-gradient-to-br from-purple-900/30 to-slate-900/30 backdrop-blur-xl rounded-2xl p-6 border border-purple-500/30">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h3 className="text-2xl font-bold text-white mb-1">{activeNode}</h3>
-                <code className="text-sm text-purple-300 bg-slate-800/50 px-2 py-1 rounded">
-                  {nodeDetails[activeNode].route}
-                </code>
-              </div>
-              <button 
-                onClick={() => setShowDetails(false)}
-                className="text-slate-400 hover:text-white transition-colors"
-              >
-                ✕
-              </button>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <h4 className="text-sm font-semibold text-purple-300 mb-2">Purpose</h4>
-                <p className="text-slate-300">{nodeDetails[activeNode].purpose}</p>
-              </div>
-              
-              <div>
-                <h4 className="text-sm font-semibold text-purple-300 mb-2">Key Components</h4>
-                <div className="flex flex-wrap gap-2">
-                  {nodeDetails[activeNode].components.map((comp, idx) => (
-                    <span 
-                      key={idx}
-                      className="px-3 py-1 bg-slate-800/50 text-slate-300 rounded-full text-sm border border-slate-700/30"
-                    >
-                      {comp}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {!showDetails && (
-          <button
-            onClick={() => setShowDetails(true)}
-            className="w-full py-3 bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 rounded-xl border border-purple-500/30 transition-colors"
-          >
-            Show Route Details
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}```
 
 ### Flow Breakdown
 1.  **Onboarding**: Secure Email/Password auth with verification ensures account security.
