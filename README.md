@@ -92,8 +92,7 @@ graph TD
     classDef live fill:#be123c,stroke:#f43f5e,color:white,shape:diamond;
     classDef result fill:#1e293b,stroke:#94a3b8,color:#bfdbfe,stroke-dasharray: 5 5;
 
-    linkStyle 6,7,8,9,10,11,12,13,14 stroke:#a855f7,stroke-width:2px,color:#e2e8f0;
-```
+    linkStyle 6,7,8,9,10,11,12,13,14 stroke:#a855f7,stroke-width:2px,color:#e2e8f0;```
 
 
 ## 🚀 Key Features & Benefits
